@@ -1,0 +1,1486 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#b98a6a">
+<title>Cozy Reads</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<style>
+/* ============================ cozy theme ============================
+   Soft, warm "reading nook" colors. Everything rounded and gentle. */
+:root{
+  --paper:#fbf3e9;      /* warm cream background */
+  --card:#fffaf3;       /* book cards */
+  --ink:#5b463a;        /* soft brown text */
+  --ink-soft:#9c8676;   /* lighter brown */
+  --cocoa:#b98a6a;      /* main accent */
+  --cocoa-dk:#a06f50;
+  --rose:#e7a0a0;       /* little pops of color */
+  --sage:#a7c4a0;
+  --gold:#f2c14e;       /* stars */
+  --line:#ece0d2;
+  --shadow:0 6px 18px rgba(120,90,60,.12);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:"Segoe UI","Comic Sans MS",system-ui,sans-serif;
+  background:
+    radial-gradient(1200px 500px at 50% -10%, #fff7ee, transparent),
+    var(--paper);
+  color:var(--ink);
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:760px;margin:0 auto;padding:18px 16px 90px}
+
+/* ---- header ---- */
+header{text-align:center;padding:18px 0 8px}
+header h1{
+  margin:0;font-size:34px;letter-spacing:.5px;
+  color:var(--cocoa-dk);
+}
+header .sub{color:var(--ink-soft);font-size:15px;margin-top:2px}
+
+/* ---- goal cards ---- */
+.goals{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}
+.goal{
+  background:var(--card);border:2px solid var(--line);border-radius:18px;
+  padding:12px 10px;text-align:center;box-shadow:var(--shadow);
+}
+.goal .emoji{font-size:22px}
+.goal .big{font-size:20px;font-weight:700;color:var(--cocoa-dk);margin-top:2px}
+.goal .lbl{font-size:12px;color:var(--ink-soft);margin-top:2px}
+.bar{height:9px;background:var(--line);border-radius:9px;margin-top:8px;overflow:hidden}
+.bar > i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--sage),var(--cocoa));border-radius:9px;transition:width .4s}
+
+/* ---- buttons ---- */
+button{font-family:inherit;cursor:pointer}
+.btn{
+  background:var(--cocoa);color:#fff;border:none;border-radius:14px;
+  padding:11px 16px;font-size:15px;font-weight:700;box-shadow:var(--shadow);
+}
+.btn:active{transform:translateY(1px)}
+.btn.soft{background:#fff;color:var(--cocoa-dk);border:2px solid var(--line);box-shadow:none}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.center{justify-content:center}
+
+/* ---- bottom navigation menu ---- */
+.bottomnav{position:fixed;left:0;right:0;bottom:0;display:flex;background:var(--card);border-top:2px solid var(--line);box-shadow:0 -4px 16px rgba(120,90,60,.12);z-index:15;padding-bottom:env(safe-area-inset-bottom)}
+.bottomnav button{flex:1;border:none;background:none;display:flex;flex-direction:column;align-items:center;gap:2px;font-family:inherit;color:var(--ink-soft);font-size:11px;font-weight:700;padding:8px 2px 6px;cursor:pointer}
+.bottomnav button .ico{font-size:22px;line-height:1}
+.bottomnav button.on{color:var(--cocoa-dk)}
+
+/* ---- calendar page ---- */
+.cal-head{display:flex;align-items:center;justify-content:center;gap:14px;margin:8px 0 12px}
+.cal-head button{background:var(--card);border:2px solid var(--line);border-radius:10px;font-size:20px;width:40px;height:40px;cursor:pointer;color:var(--cocoa-dk);font-family:inherit}
+.cal-head span{font-weight:800;color:var(--cocoa-dk);font-size:17px;min-width:150px;text-align:center}
+.cal-dow{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:4px}
+.cal-dow div{text-align:center;font-size:11px;color:var(--ink-soft);font-weight:700}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal-cell{aspect-ratio:.85;border:2px solid var(--line);border-radius:10px;background:var(--card);padding:3px;display:flex;flex-direction:column;align-items:center;cursor:pointer;overflow:hidden}
+.cal-cell.blank{border:none;background:none;cursor:default}
+.cal-cell.today{border-color:var(--cocoa);box-shadow:0 0 0 1px var(--cocoa)}
+.cal-cell .dnum{font-weight:700;color:var(--ink);font-size:12px}
+.cal-cell .marks{font-size:11px;line-height:1.05;margin-top:1px;word-break:break-all}
+.cal-legend{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin:14px 0;color:var(--ink-soft);font-size:12px}
+
+/* ---- games + settings pages ---- */
+.game-card{display:flex;align-items:center;gap:12px;background:var(--card);border:2px solid var(--line);border-radius:16px;padding:14px;box-shadow:var(--shadow)}
+.game-card .grow{flex:1;min-width:0}
+.set-card{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:14px;box-shadow:var(--shadow)}
+
+/* ---- streak flame (Duolingo-style motivation) ---- */
+.streakbadge{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:7px 16px;font-weight:800;font-size:15px;margin-top:10px;
+  background:linear-gradient(135deg,#ffe0b0,#ffd0d8);border:2px solid var(--gold);color:#a06f50;box-shadow:var(--shadow)}
+.streakbadge.cold{background:var(--card);border-color:var(--line);color:var(--ink-soft);font-weight:700}
+
+/* ---- calendar (special days) ---- */
+.typepick{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:6px 0}
+.typepick button{border:2px solid var(--line);background:#fff;color:var(--ink);border-radius:12px;padding:11px;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit}
+.typepick button.on{background:var(--cocoa);color:#fff;border-color:var(--cocoa)}
+.evt{display:flex;align-items:center;gap:10px;background:#fff;border:2px solid var(--line);border-radius:12px;padding:10px;margin-bottom:8px}
+.evt .grow{flex:1;min-width:0}
+.evt .when{color:var(--ink-soft);font-size:12px}
+.evt-banner{background:linear-gradient(135deg,#ffe9ef,#fff3df);border:2px solid var(--gold);border-radius:12px;padding:8px 12px;font-weight:800;color:var(--cocoa-dk);margin-bottom:10px;text-align:center;font-size:14px}
+
+/* ---- daily challenge card ---- */
+.challenge{background:linear-gradient(135deg,#fff3df,#ffe9ef);border:2px solid var(--line);border-radius:18px;padding:14px 16px;margin:16px 0 4px;box-shadow:var(--shadow)}
+.challenge.done{background:linear-gradient(135deg,#e8f4e2,#dff0ea)}
+.challenge.compact{padding:10px 14px;display:flex;align-items:center;flex-wrap:wrap}
+.challenge .top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.challenge .lbl{font-size:12px;color:var(--ink-soft);font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+.challenge .txt{font-size:19px;font-weight:700;color:var(--cocoa-dk);margin:8px 0 12px}
+.challenge .roll{background:none;border:none;font-size:20px;cursor:pointer;line-height:1}
+.challenge .streak{font-size:13px;color:var(--ink-soft);font-weight:700}
+
+/* ---- tabs (Finished / Wishlist) ---- */
+.tabs{display:flex;gap:8px;margin:16px 4px 4px}
+.tabs button{flex:1;border:2px solid var(--line);background:#fff;color:var(--ink-soft);font-weight:700;padding:10px 8px;border-radius:16px;font-size:14px;box-shadow:var(--shadow)}
+.tabs button.on{background:var(--cocoa);color:#fff;border-color:var(--cocoa)}
+
+/* ---- book list ---- */
+.section-title{font-size:18px;color:var(--cocoa-dk);margin:18px 4px 8px;font-weight:700}
+.book .mini{padding:6px 12px;font-size:13px;margin-top:8px;box-shadow:none}
+.book .cover,.book .noimg{width:42px;height:62px;border-radius:6px;flex:none;object-fit:cover;background:var(--line)}
+.book .noimg{display:flex;align-items:center;justify-content:center;font-size:20px}
+
+/* ---- find books (smart wishlist) ---- */
+.muted{color:var(--ink-soft);font-size:12px}
+.search-row{display:flex;gap:8px;margin-top:10px}
+.search-row input{flex:1}
+.quick{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.quick .btn{padding:8px 12px;font-size:13px;box-shadow:none}
+.spinner{text-align:center;color:var(--ink-soft);padding:18px}
+.results{display:flex;flex-direction:column;gap:10px;max-height:46vh;overflow:auto;margin-top:12px}
+.result{display:flex;gap:10px;align-items:flex-start;background:#fff;border:2px solid var(--line);border-radius:14px;padding:8px}
+.result img,.result .noimg{width:46px;height:68px;border-radius:6px;flex:none;object-fit:cover;background:var(--line)}
+.result .noimg{display:flex;align-items:center;justify-content:center;font-size:22px}
+.result .grow{flex:1;min-width:0}
+.result .ttl{font-weight:700;font-size:14px;line-height:1.2}
+.result .auth{color:var(--ink-soft);font-size:12px}
+.result .pg{color:var(--ink-soft);font-size:12px;margin-top:2px}
+
+/* ---- reading bingo ---- */
+.bingo-sub{color:var(--ink-soft);font-size:13px;margin:0 4px 12px;line-height:1.4}
+.bingo-win{background:linear-gradient(135deg,#fff3df,#e8f4e2);border:2px solid var(--sage);border-radius:14px;padding:12px;text-align:center;font-weight:700;font-size:18px;color:var(--cocoa-dk);margin-bottom:12px;box-shadow:var(--shadow)}
+.bingo-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.bingo-cell{position:relative;aspect-ratio:1;border:2px solid var(--line);background:var(--card);border-radius:12px;padding:3px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;box-shadow:var(--shadow);text-align:center;cursor:pointer;font-family:inherit}
+.bingo-cell .be{font-size:20px;line-height:1}
+.bingo-cell .bt{font-size:9.5px;color:var(--ink);line-height:1.1;font-weight:700}
+.bingo-cell.on{background:linear-gradient(135deg,#cfe9c4,#a7c4a0);border-color:var(--sage)}
+.bingo-cell.on .bt{color:#34502d}
+.bingo-cell.free{background:linear-gradient(135deg,#ffe9ef,#fff3df);border-color:var(--gold)}
+.viewbar{display:flex;gap:6px;margin:0 4px 12px;background:var(--line);padding:4px;border-radius:14px}
+.viewbar button{flex:1;border:none;background:transparent;color:var(--ink-soft);font-weight:700;padding:9px 4px;border-radius:11px;font-size:14px}
+.viewbar button.on{background:#fff;color:var(--cocoa-dk);box-shadow:var(--shadow)}
+.group-head{font-size:15px;color:var(--cocoa-dk);font-weight:700;margin:16px 4px 6px;display:flex;align-items:center;gap:8px}
+.group-head .count{background:var(--cocoa);color:#fff;border-radius:20px;font-size:12px;padding:1px 9px;font-weight:700}
+.books{display:flex;flex-direction:column;gap:10px}
+.book{
+  background:var(--card);border:2px solid var(--line);border-radius:16px;
+  padding:12px 14px;box-shadow:var(--shadow);display:flex;gap:12px;align-items:flex-start;
+}
+.book .spine{width:8px;align-self:stretch;border-radius:6px;background:var(--rose)}
+.book:nth-child(4n+2) .spine{background:var(--sage)}
+.book:nth-child(4n+3) .spine{background:var(--cocoa)}
+.book:nth-child(4n+4) .spine{background:var(--gold)}
+.book .grow{flex:1;min-width:0}
+.book .ttl{font-weight:700;font-size:16px}
+.book .auth{color:var(--ink-soft);font-size:13px}
+.book .meta{color:var(--ink-soft);font-size:13px;margin-top:3px}
+.book .x{background:none;border:none;color:var(--ink-soft);font-size:18px;line-height:1}
+.empty{text-align:center;color:var(--ink-soft);padding:30px 10px}
+.empty .em{font-size:40px}
+
+/* ---- stars ---- */
+.stars{font-size:18px;user-select:none}
+.stars.rate{cursor:pointer}
+.st{color:var(--line)}                                  /* empty star */
+.st.full{color:var(--gold)}                             /* filled star */
+.st.half{                                               /* half-filled: gold on the left, grey on the right */
+  background:linear-gradient(90deg,var(--gold) 50%,var(--line) 50%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+
+/* ---- modal (the pop-up box) ---- */
+.scrim{position:fixed;inset:0;background:rgba(70,50,40,.4);display:none;align-items:flex-end;justify-content:center;z-index:20}
+.scrim.show{display:flex}
+.sheet{
+  background:var(--card);width:100%;max-width:760px;border-radius:22px 22px 0 0;
+  padding:18px 18px 26px;box-shadow:0 -10px 30px rgba(80,60,40,.25);
+  animation:rise .25s ease-out;
+}
+@keyframes rise{from{transform:translateY(40px);opacity:.4}to{transform:none;opacity:1}}
+.sheet h2{margin:2px 0 14px;color:var(--cocoa-dk)}
+label{display:block;font-size:13px;color:var(--ink-soft);margin:10px 2px 4px}
+input[type=text],input[type=number],input[type=date]{
+  width:100%;font-family:inherit;font-size:16px;color:var(--ink);
+  background:#fff;border:2px solid var(--line);border-radius:12px;padding:10px 12px;
+}
+input:focus{outline:none;border-color:var(--cocoa)}
+label.check{display:flex;align-items:center;gap:8px;margin:14px 2px 4px;color:var(--ink);font-size:14px;cursor:pointer;font-weight:600}
+label.check input{width:auto;transform:scale(1.3)}
+.bingo-progress{text-align:center;color:var(--ink-soft);font-weight:700;font-size:14px;margin-bottom:12px}
+.starpick{font-size:34px;display:inline-flex;gap:6px;cursor:pointer;user-select:none}
+.starpick .st{width:1em;text-align:center}
+.fab{
+  position:fixed;right:18px;bottom:84px;z-index:16;
+  background:var(--cocoa);color:#fff;border:none;border-radius:50%;
+  width:62px;height:62px;font-size:30px;box-shadow:var(--shadow);
+}
+footer{text-align:center;color:var(--ink-soft);font-size:12px;margin-top:24px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>📚 Cozy Reads</h1>
+    <div class="sub">your snuggly little reading nook</div>
+    <div id="streakBadge" class="streakbadge"></div>
+  </header>
+
+  <!-- ============ HOME PAGE ============ -->
+  <div class="page" id="page-home">
+
+  <!-- A surprise reading challenge, fresh each day -->
+  <div class="challenge" id="challenge"></div>
+
+  <!-- Two shelves: books you finished, and books you want to read -->
+  <div class="tabs" id="tabs">
+    <button data-t="wishlist">💛 Wishlist</button>
+    <button data-t="reading">📖 Reading</button>
+    <button data-t="finished">✅ Finished</button>
+  </div>
+
+  <!-- Goal cards (only shown on the Finished shelf) -->
+  <div id="goalsWrap">
+    <div class="goals" id="goals"></div>
+    <div class="row center">
+      <button class="btn soft" id="logMinutes">⏰ Log reading time</button>
+      <button class="btn soft" id="editGoals">✏️ Set my goals</button>
+    </div>
+  </div>
+
+  <div class="section-title" id="shelfTitle">My Bookshelf</div>
+  <div class="viewbar" id="viewbar">
+    <button data-v="all">All</button>
+    <button data-v="week">Week</button>
+    <button data-v="month">Month</button>
+    <button data-v="season">Season</button>
+  </div>
+  <div class="books" id="books"></div>
+  </div><!-- /page-home -->
+
+  <!-- ============ CALENDAR PAGE ============ -->
+  <div class="page" id="page-calendar" style="display:none">
+    <div class="section-title">🗓️ Calendar</div>
+    <div class="cal-head">
+      <button id="calPrev" title="Previous month">‹</button>
+      <span id="calMonth"></span>
+      <button id="calNext" title="Next month">›</button>
+    </div>
+    <div class="cal-dow"><div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div></div>
+    <div class="cal-grid" id="calGrid"></div>
+    <div class="cal-legend"><span>🚗✈️🎄🏖️ special day</span><span>📖 started</span><span>✅ finished</span></div>
+    <div class="row center"><button class="btn" id="calAdd">➕ Add a special day</button></div>
+  </div>
+
+  <!-- ============ GAMES PAGE ============ -->
+  <div class="page" id="page-games" style="display:none">
+    <div class="section-title">🎮 Games</div>
+    <div id="gamesList"></div>
+  </div>
+
+  <!-- ============ SETTINGS PAGE ============ -->
+  <div class="page" id="page-settings" style="display:none">
+    <div class="section-title">⚙️ Settings</div>
+    <div class="set-card">
+      <b>📖 My reading level</b>
+      <div class="muted" id="setLevel" style="margin-top:4px"></div>
+      <button class="btn soft" id="editLevel" style="margin-top:10px">Edit</button>
+    </div>
+    <div class="set-card" style="margin-top:12px">
+      <b>☁️ Save online (Google Sheets)</b>
+      <div class="muted" style="margin-top:4px" id="syncStatus">Not connected.</div>
+      <div class="row" style="margin-top:10px" id="syncButtons"></div>
+    </div>
+    <footer id="about" style="margin-top:18px"></footer>
+  </div>
+
+</div><!-- /wrap -->
+
+<button class="fab" id="addBook" title="Add a book">＋</button>
+
+<nav class="bottomnav" id="bottomnav">
+  <button data-p="home"><span class="ico">🏠</span><span>Home</span></button>
+  <button data-p="calendar"><span class="ico">🗓️</span><span>Calendar</span></button>
+  <button data-p="games"><span class="ico">🎮</span><span>Games</span></button>
+  <button data-p="settings"><span class="ico">⚙️</span><span>Settings</span></button>
+</nav>
+
+<!-- ====== Add-a-book pop-up ====== -->
+<div class="scrim" id="bookScrim">
+  <div class="sheet">
+    <h2>➕ Add a book</h2>
+    <label>What's the title?</label>
+    <input type="text" id="f_title" placeholder="e.g. Charlotte's Web">
+    <label>Who wrote it?</label>
+    <input type="text" id="f_author" placeholder="e.g. E. B. White">
+    <label>How many pages?</label>
+    <input type="number" id="f_pages" min="0" placeholder="e.g. 184">
+    <label class="check"><input type="checkbox" id="f_epiOn"> 📖 This book has an epilogue — count it as extra pages</label>
+    <div id="f_epiWrap" style="display:none">
+      <label>How many epilogue pages? (leave blank if you don't know)</label>
+      <input type="number" id="f_epiPages" min="0" placeholder="e.g. 8">
+    </div>
+    <label>When did you finish it? 📅</label>
+    <input type="date" id="f_date">
+    <label>How many stars? (tap a star — tap its left edge for a half ⭐)</label>
+    <div class="starpick" id="f_stars"></div>
+    <div class="row" style="margin-top:18px">
+      <button class="btn" id="saveBook">Add to shelf 📖</button>
+      <button class="btn soft" id="cancelBook">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====== Add-to-wishlist pop-up ====== -->
+<div class="scrim" id="wishScrim">
+  <div class="sheet">
+    <h2>💛 Add to wishlist</h2>
+    <label>What's the title?</label>
+    <input type="text" id="w_title" placeholder="e.g. The Secret Garden">
+    <label>Who wrote it? (if you know)</label>
+    <input type="text" id="w_author" placeholder="e.g. Frances Hodgson Burnett">
+    <label>How many pages? (if you know)</label>
+    <input type="number" id="w_pages" min="0" placeholder="e.g. 184">
+    <label class="check"><input type="checkbox" id="w_epiOn"> 📖 Count an epilogue as extra pages</label>
+    <div id="w_epiWrap" style="display:none">
+      <label>How many epilogue pages?</label>
+      <input type="number" id="w_epiPages" min="0" placeholder="e.g. 8">
+    </div>
+    <label>When do you want to read it? 📅</label>
+    <input type="date" id="w_date">
+    <div class="row" style="margin-top:18px">
+      <button class="btn" id="saveWish">Add to wishlist 💛</button>
+      <button class="btn soft" id="cancelWish">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====== Connect to Google Sheets pop-up ====== -->
+<div class="scrim" id="connScrim">
+  <div class="sheet">
+    <h2>☁️ Save online</h2>
+    <div class="muted">Paste the web-app address and the secret from your spreadsheet. This lets Cozy Reads save your books online so you can use them on another device.</div>
+    <label>Web app address (the long https://script.google.com/… link)</label>
+    <input type="text" id="conn_url" placeholder="https://script.google.com/macros/s/…/exec" autocapitalize="off" spellcheck="false">
+    <label>Secret</label>
+    <input type="text" id="conn_secret" placeholder="your secret" autocapitalize="off" spellcheck="false">
+    <div class="muted" id="conn_msg" style="margin-top:8px"></div>
+    <div class="row" style="margin-top:16px">
+      <button class="btn" id="conn_save">Connect</button>
+      <button class="btn soft" id="conn_cancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====== Log reading time pop-up ====== -->
+<div class="scrim" id="minScrim">
+  <div class="sheet">
+    <h2>⏰ Log reading time</h2>
+    <div class="muted" id="minToday"></div>
+    <div class="quick" style="margin-top:12px">
+      <button class="btn soft minadd" data-m="5">+5 min</button>
+      <button class="btn soft minadd" data-m="10">+10 min</button>
+      <button class="btn soft minadd" data-m="15">+15 min</button>
+      <button class="btn soft minadd" data-m="30">+30 min</button>
+    </div>
+    <label style="margin-top:14px">Or type exactly how many minutes you read:</label>
+    <div class="search-row">
+      <input type="number" id="minCustom" min="0" placeholder="e.g. 25">
+      <button class="btn" id="minAddCustom">Add</button>
+    </div>
+    <div class="row" style="margin-top:16px">
+      <button class="btn" id="closeMin">Done</button>
+      <button class="btn soft" id="minReset">Reset today</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====== Goals pop-up ====== -->
+<div class="scrim" id="goalScrim">
+  <div class="sheet">
+    <h2>🎯 My reading goals</h2>
+    <label>📚 Books I want to read</label>
+    <input type="number" id="g_books" min="0" placeholder="e.g. 20">
+    <label>📄 Pages I want to read</label>
+    <input type="number" id="g_pages" min="0" placeholder="e.g. 1000">
+    <label>⏰ Minutes I want to read each day</label>
+    <input type="number" id="g_minutes" min="0" placeholder="e.g. 20">
+    <div class="row" style="margin-top:18px">
+      <button class="btn" id="saveGoals">Save goals</button>
+      <button class="btn soft" id="cancelGoals">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====== Reading Bingo pop-up (part of the daily challenges) ====== -->
+<div class="scrim" id="bingoScrim">
+  <div class="sheet">
+    <h2 id="bingoTitle">🎲 Reading Bingo</h2>
+    <div class="bingo-sub">Read a book for a square, then tap it. Fill the <b>whole board</b> to win — then start a fresh one for the season! Perfect for summer, holidays &amp; vacations. 🌈</div>
+    <div id="bingoWin"></div>
+    <div class="bingo-grid" id="bingoGrid"></div>
+    <div class="row" style="margin-top:16px">
+      <button class="btn" id="closeBingo">Done</button>
+      <button class="btn soft" id="newBingo">🔄 New board</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====== Find books (smart wishlist) pop-up ====== -->
+<div class="scrim" id="discoverScrim">
+  <div class="sheet">
+    <h2>📚 Find books</h2>
+    <div class="row" style="justify-content:space-between;align-items:center">
+      <span class="muted" id="discoverProfile"></span>
+      <button class="btn soft" id="discoverProfileBtn" style="padding:6px 10px;font-size:13px;box-shadow:none">⚙️ My level</button>
+    </div>
+    <div class="search-row">
+      <input type="text" id="discoverSearch" placeholder="Type a book name or author…">
+      <button class="btn" id="discoverGo">🔍</button>
+    </div>
+    <div class="quick">
+      <button class="btn soft" id="discoverPopular">🔥 Popular</button>
+      <button class="btn soft" id="discoverLevel">✨ For my level</button>
+      <button class="btn soft" id="discoverManual">✍️ Type it myself</button>
+    </div>
+    <div class="results" id="discoverResults"></div>
+    <div class="row" style="margin-top:14px"><button class="btn" id="closeDiscover">Done</button></div>
+  </div>
+</div>
+
+<!-- ====== Calendar (special days) pop-up ====== -->
+<div class="scrim" id="calScrim">
+  <div class="sheet">
+    <h2>🗓️ My Calendar</h2>
+    <div class="muted">Add special days. On those days you'll get a matching reading challenge — and your Bingo pops up on trips &amp; vacations! 🌈</div>
+    <label>What kind of day?</label>
+    <div class="typepick" id="evTypePick">
+      <button data-t="car">🚗 Car ride</button>
+      <button data-t="trip">✈️ Trip</button>
+      <button data-t="holiday">🎄 Holiday</button>
+      <button data-t="vacation">🏖️ Vacation</button>
+    </div>
+    <label>From (the day it starts)</label>
+    <input type="date" id="ev_from">
+    <label>To (leave empty if it's just one day)</label>
+    <input type="date" id="ev_to">
+    <div class="row" style="margin-top:14px">
+      <button class="btn" id="addEvent">Add to calendar</button>
+    </div>
+    <div class="section-title" style="margin-top:18px">Coming up</div>
+    <div id="evList"></div>
+    <div class="row" style="margin-top:14px"><button class="btn soft" id="closeCal">Done</button></div>
+  </div>
+</div>
+
+<!-- ====== My reading level pop-up ====== -->
+<div class="scrim" id="profileScrim">
+  <div class="sheet">
+    <h2>⚙️ My reading level</h2>
+    <label>What grade are you in? (change it anytime)</label>
+    <input type="text" id="p_grade" placeholder="e.g. 7">
+    <label>Your Lexile number (change it whenever you get a new one)</label>
+    <input type="number" id="p_lexile" min="0" placeholder="e.g. 1250">
+    <label class="check"><input type="checkbox" id="p_autoEpi"> 📖 Automatically count epilogues on books I add</label>
+    <div id="p_epiWrap" style="display:none">
+      <label>About how many pages should an epilogue add?</label>
+      <input type="number" id="p_epiEst" min="0" placeholder="e.g. 10">
+      <div class="muted" style="margin-top:4px">No website knows real epilogue page counts, so the app adds this estimate. You can change it anytime.</div>
+    </div>
+    <div class="row" style="margin-top:16px">
+      <button class="btn" id="saveProfile">Save</button>
+      <button class="btn soft" id="cancelProfile">Cancel</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+/* ============================ Cozy Reads ============================
+   This is the "brain" of the app. It remembers your books and goals,
+   and draws them on the screen. */
+
+const APP_VERSION = "18";       // bump every time we change this file (keep equal to CACHE in sw.js)
+const SCHEMA_VERSION = 1;       // bump only if the SHAPE of saved data changes
+const LS = "cozyreads";         // the name of our little storage box in the browser
+
+/* DB = everything the app remembers. */
+let DB = loadDB();
+
+function defaultsDB(){ return { books:[], wishlist:[], reading:[], goals:{books:0,pages:0,minutes:0}, view:"all", tab:"finished", schemaVersion:SCHEMA_VERSION }; }
+function normalizeDB(src){
+  let db = Object.assign(defaultsDB(), src||{});         // keep saved data, fill in anything missing
+  if(!Array.isArray(db.books)) db.books=[];
+  if(!Array.isArray(db.wishlist)) db.wishlist=[];
+  if(!Array.isArray(db.reading)) db.reading=[];          // books you're reading right now
+  if(!db.tab) db.tab="finished";
+  if(!db.cstats) db.cstats={done:0, streak:0, last:""};   // daily-challenge stats
+  if(!db.profile) db.profile={grade:"7", lexile:1250};    // reading level (editable anytime)
+  if(!db.settings) db.settings={autoEpilogue:false, epilogueEstimate:10};
+  if(!Array.isArray(db.events)) db.events=[];             // calendar of special days
+  if(!db.lastAutoBingo) db.lastAutoBingo="";              // so bingo only auto-pops once a day
+  if(!db.page) db.page="home";                            // which bottom-menu page is open
+  if(!db.minutesLog) db.minutesLog={date:"", mins:0};     // minutes read today (resets each day)
+  if(typeof db.updatedAt!=="number") db.updatedAt=0;      // when this data last changed (for cloud sync)
+  return db;
+}
+function loadDB(){
+  let src=null;
+  try{ const raw=localStorage.getItem(LS); if(raw) src=JSON.parse(raw); }catch(e){}
+  return normalizeDB(src);
+}
+function persistDB(){ localStorage.setItem(LS, JSON.stringify(DB)); }
+function saveDB(){
+  if(!suppressSync) DB.updatedAt = Date.now();   // stamp the change so the cloud knows what's newest
+  persistDB();
+  if(!suppressSync) scheduleSync();              // and quietly save it online
+}
+
+/* ============================ cloud sync (Google Sheets) ============================
+   Talks to the Apps Script backend with a plain-text POST (no CORS preflight).
+   The whole app document is saved as one blob; newest-by-time wins. */
+let SYNC = { url:"", secret:"", on:false };
+let syncT=null, suppressSync=false, syncMsg="";
+function loadSync(){ try{ const s=localStorage.getItem(LS+"_sync"); if(s) SYNC=Object.assign(SYNC, JSON.parse(s)); }catch(e){} }
+function saveSync(){ localStorage.setItem(LS+"_sync", JSON.stringify(SYNC)); }
+
+async function api(action, data){
+  if(!SYNC.url || !SYNC.secret) throw new Error("not connected");
+  const r = await fetch(SYNC.url, { method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"},
+    body: JSON.stringify({ action, secret:SYNC.secret, data }) });
+  const j = await r.json();
+  if(!j.ok) throw new Error(j.error||"server error");
+  return j;
+}
+function setSyncStatus(m){ syncMsg=m; const el=document.getElementById("syncStatus"); if(el) el.textContent=m; }
+function scheduleSync(){ if(!SYNC.on) return; clearTimeout(syncT); syncT=setTimeout(()=>pushNow().catch(()=>{}), 1200); }
+async function pushNow(){
+  if(!SYNC.on) return;
+  setSyncStatus("Saving…");
+  await api("push", { db:DB, ts:DB.updatedAt||Date.now() });
+  setSyncStatus("Saved online ✓");
+}
+function adoptRemote(rdb, rts){
+  suppressSync=true;
+  DB = normalizeDB(rdb);
+  DB.updatedAt = rts || DB.updatedAt || 0;
+  persistDB();
+  renderAll();
+  suppressSync=false;
+}
+function dbHasContent(db){ return !!(db && ((db.books&&db.books.length)||(db.wishlist&&db.wishlist.length)||(db.reading&&db.reading.length))); }
+async function pullNow(){
+  const d = (await api("pull")).data || {};
+  if(dbHasContent(d.db) && (d.ts||0) > (DB.updatedAt||0)){ adoptRemote(d.db, d.ts); return "pulled"; }
+  return "localnewer";
+}
+async function syncNow(){
+  if(!SYNC.on) return;
+  try{
+    setSyncStatus("Syncing…");
+    const r = await pullNow();
+    if(r==="localnewer") await pushNow();
+    setSyncStatus("Synced ✓");
+    renderSettings();
+  }catch(e){ setSyncStatus("⚠️ "+e.message); }
+}
+function renderAll(){ renderChallenge(); renderGoals(); setTab(DB.tab||"finished"); showPage(DB.page||"home"); }
+
+/* tiny helper to grab something on the page by its name */
+const $ = id => document.getElementById(id);
+
+/* ---------- draw the stars for a rating (e.g. 3.5 -> ★★★½☆) ---------- */
+function starString(r){
+  let s="";
+  for(let i=1;i<=5;i++){
+    if(r>=i) s+="★";
+    else if(r>=i-0.5) s+="⯨";   // we draw halves with a half-filled look below
+    else s+="<span class='off'>★</span>";
+  }
+  return s;
+}
+/* a clearer half-star using two characters layered isn't simple in plain text,
+   so we show halves as "½" appended for readability */
+/* total pages of a book = its pages plus any epilogue pages you chose to count */
+function totalPages(b){ return (Number(b.pages)||0) + (Number(b.epiloguePages)||0); }
+
+function prettyStars(r){
+  // each star is its own piece: full, half (gold on the left), or empty
+  let h="";
+  for(let i=1;i<=5;i++){
+    const cls = r>=i ? "full" : (r>=i-0.5 ? "half" : "");
+    h += `<span class="st ${cls}">★</span>`;
+  }
+  return h;
+}
+
+/* ============================ reading-minutes log ============================ */
+function minutesToday(){ return (DB.minutesLog.date===todayStr()) ? (DB.minutesLog.mins||0) : 0; }
+function addMinutes(n){
+  const t = todayStr();
+  if(DB.minutesLog.date !== t) DB.minutesLog = { date:t, mins:0 };   // new day → start fresh
+  DB.minutesLog.mins = Math.max(0, (DB.minutesLog.mins||0) + n);
+  saveDB(); renderGoals(); renderMinModal();
+}
+function renderMinModal(){
+  const mins = minutesToday(), goal = DB.goals.minutes||0;
+  $("minToday").innerHTML = `You've read <b>${mins} min</b> today${goal ? ` · your goal is ${goal} min` : ""}.`;
+}
+function openMin(){ renderMinModal(); $("minScrim").classList.add("show"); }
+$("logMinutes").onclick = openMin;
+$("closeMin").onclick   = ()=>$("minScrim").classList.remove("show");
+$("minReset").onclick   = ()=>{ DB.minutesLog={date:todayStr(), mins:0}; saveDB(); renderGoals(); renderMinModal(); };
+$("minScrim").addEventListener("click", e=>{ const b=e.target.closest(".minadd"); if(b) addMinutes(+b.dataset.m); });
+$("minAddCustom").onclick = ()=>{ const v=Number($("minCustom").value)||0; if(v>0){ addMinutes(v); $("minCustom").value=""; } };
+
+/* ============================ goals ============================ */
+function renderGoals(){
+  const readBooks = DB.books.length;
+  const readPages = DB.books.reduce((sum,b)=>sum+totalPages(b),0);
+  const g = DB.goals;
+
+  const cards = [
+    {emoji:"📚", have:readBooks, goal:g.books,   lbl:"books"},
+    {emoji:"📄", have:readPages, goal:g.pages,   lbl:"pages"},
+    {emoji:"⏰", have:minutesToday(), goal:g.minutes, lbl:"min/day"},
+  ];
+  $("goals").innerHTML = cards.map(c=>{
+    const pct = c.goal>0 ? Math.min(100, Math.round(c.have/c.goal*100)) : 0;
+    const top = c.goal>0 ? `${c.have} / ${c.goal}` : (c.lbl==="min/day" ? "—" : c.have);
+    return `<div class="goal">
+      <div class="emoji">${c.emoji}</div>
+      <div class="big">${top}</div>
+      <div class="lbl">${c.lbl}</div>
+      <div class="bar"><i style="width:${pct}%"></i></div>
+    </div>`;
+  }).join("");
+}
+
+/* ============================ bookshelf ============================ */
+const MONTHS=["January","February","March","April","May","June",
+              "July","August","September","October","November","December"];
+
+/* turn a book's finish-date into the group it belongs to (depends on the chosen view) */
+function groupInfo(dateStr, mode){
+  if(!dateStr) return { key:"none", label:"📌 No date yet", sort:"0" };
+  const d = new Date(dateStr+"T00:00:00");
+  const y = d.getFullYear(), m = d.getMonth();
+  if(mode==="month"){
+    const k = y+"-"+String(m+1).padStart(2,"0");
+    return { key:k, label:MONTHS[m]+" "+y, sort:k };
+  }
+  if(mode==="season"){
+    let s,emoji,ord;
+    if(m===11||m<=1){s="Winter";emoji="❄️";ord=0;}
+    else if(m<=4){s="Spring";emoji="🌸";ord=1;}
+    else if(m<=7){s="Summer";emoji="☀️";ord=2;}
+    else {s="Fall";emoji="🍂";ord=3;}
+    return { key:y+"-"+s, label:emoji+" "+s+" "+y, sort:y+"-"+ord };
+  }
+  if(mode==="week"){
+    const day=d.getDay();                 // 0=Sun .. 6=Sat
+    const back=(day===0?-6:1-day);         // step back to Monday
+    const mon=new Date(d); mon.setDate(d.getDate()+back);
+    const k=mon.getFullYear()+"-"+String(mon.getMonth()+1).padStart(2,"0")+"-"+String(mon.getDate()).padStart(2,"0");
+    return { key:k, label:"Week of "+MONTHS[mon.getMonth()].slice(0,3)+" "+mon.getDate()+", "+mon.getFullYear(), sort:k };
+  }
+  return { key:"all", label:"", sort:"" };
+}
+
+function bookCard(b){
+  return `<div class="book">
+      ${b.cover?`<img class="cover" src="${b.cover}" alt="" onerror="this.outerHTML='&lt;div class=&quot;spine&quot;&gt;&lt;/div&gt;'">`:`<div class="spine"></div>`}
+      <div class="grow">
+        <div class="ttl">${escapeHtml(b.title||"(no title)")}</div>
+        <div class="auth">${b.author?("by "+escapeHtml(b.author)):""}</div>
+        <div class="stars rate" data-id="${b.id}" title="Tap a star to rate (left side = half)">${prettyStars(b.rating||0)}</div>
+        <div class="meta">${b.pages?(b.pages+" pages"+(b.epiloguePages?` (+${b.epiloguePages} epilogue)`:"")):""}${(b.pages&&b.finished)?" · ":""}${b.finished?prettyDate(b.finished):""}</div>
+      </div>
+      <button class="x" title="Remove" onclick="removeBook('${b.id}')">✕</button>
+    </div>`;
+}
+function prettyDate(s){ const d=new Date(s+"T00:00:00"); return MONTHS[d.getMonth()].slice(0,3)+" "+d.getDate()+", "+d.getFullYear(); }
+
+/* a wishlist book card — no stars yet (you haven't read it!), plus an "I read it!" button */
+function wishCard(b){
+  return `<div class="book">
+      ${b.cover?`<img class="cover" src="${b.cover}" alt="" onerror="this.outerHTML='&lt;div class=&quot;spine&quot;&gt;&lt;/div&gt;'">`:`<div class="spine"></div>`}
+      <div class="grow">
+        <div class="ttl">${escapeHtml(b.title||"(no title)")}</div>
+        <div class="auth">${b.author?("by "+escapeHtml(b.author)):""}</div>
+        <div class="meta">${b.plan?("hope to read: "+prettyDate(b.plan)):""}</div>
+        <button class="btn soft mini" onclick="startReading('${b.id}')">📖 Reading</button>
+        <button class="btn soft mini" onclick="readIt('${b.id}')">✓ I read it!</button>
+      </div>
+      <button class="x" title="Remove" onclick="removeWish('${b.id}')">✕</button>
+    </div>`;
+}
+
+/* a card for a book you're reading right now */
+function readingCard(b){
+  return `<div class="book">
+      ${b.cover?`<img class="cover" src="${b.cover}" alt="" onerror="this.outerHTML='&lt;div class=&quot;spine&quot;&gt;&lt;/div&gt;'">`:`<div class="spine"></div>`}
+      <div class="grow">
+        <div class="ttl">${escapeHtml(b.title||"(no title)")}</div>
+        <div class="auth">${b.author?("by "+escapeHtml(b.author)):""}</div>
+        <div class="meta">${b.pages?(b.pages+" pages"+(b.epiloguePages?` (+${b.epiloguePages} epilogue)`:"")):""}${b.started?((b.pages?" · ":"")+"started "+prettyDate(b.started)):""}</div>
+        <button class="btn mini" onclick="finishReading('${b.id}')">✓ I finished it!</button>
+      </div>
+      <button class="x" title="Remove" onclick="removeReading('${b.id}')">✕</button>
+    </div>`;
+}
+
+function renderBooks(){
+  const list = $("books");
+  const wish    = DB.tab==="wishlist";
+  const reading = DB.tab==="reading";
+  const items = reading ? DB.reading : wish ? DB.wishlist : DB.books;
+  const dateOf = b => wish ? b.plan : b.finished;
+  const card   = reading ? readingCard : wish ? wishCard : bookCard;
+
+  if(reading){   // Currently Reading is a simple list (no date grouping)
+    list.innerHTML = items.length
+      ? items.slice().reverse().map(card).join("")
+      : `<div class="empty"><div class="em">📖</div>No books in progress yet.<br>Start one from your 💛 Wishlist — tap "📖 Reading".</div>`;
+    return;
+  }
+
+  if(items.length===0){
+    list.innerHTML = wish
+      ? `<div class="empty"><div class="em">💛</div>Your wishlist is empty!<br>Tap the big ＋ button to add a book you want to read.</div>`
+      : `<div class="empty"><div class="em">🐢</div>Your shelf is empty!<br>Tap the big ＋ button to add your first book.</div>`;
+    return;
+  }
+  const mode = DB.view || "all";
+  document.querySelectorAll("#viewbar button").forEach(btn=>
+    btn.classList.toggle("on", btn.dataset.v===mode));
+
+  if(mode==="all"){
+    list.innerHTML = items.slice().reverse().map(card).join("");
+    return;
+  }
+  // group the books by week / month / season
+  const groups={};
+  for(const b of items){
+    const gi=groupInfo(dateOf(b), mode);
+    if(!groups[gi.key]) groups[gi.key]={label:gi.label, sort:gi.sort, items:[]};
+    groups[gi.key].items.push(b);
+  }
+  // finished shelf: newest first.  wishlist: soonest-to-read first.
+  const dir = wish ? -1 : 1;
+  const ordered=Object.values(groups).sort((a,b)=> a.sort<b.sort?dir : a.sort>b.sort?-dir : 0);
+  list.innerHTML = ordered.map(g=>
+    `<div class="group-head">${g.label}<span class="count">${g.items.length}</span></div>`
+    + g.items.slice().reverse().map(card).join("")
+  ).join("");
+}
+
+/* switch between the Finished and Wishlist shelves */
+function setTab(t){
+  DB.tab=t; saveDB();
+  document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on", b.dataset.t===t));
+  $("goalsWrap").style.display = (t==="finished") ? "" : "none";   // goals only make sense for finished books
+  $("shelfTitle").textContent = t==="finished" ? "My Bookshelf" : t==="reading" ? "Currently Reading" : "My Wishlist";
+  $("viewbar").style.display = (t==="reading") ? "none" : "";       // no date-grouping for currently reading
+  updateFab();                                                      // FAB only on Home, and not on the Reading shelf
+  renderBooks();
+}
+$("tabs").addEventListener("click", e=>{ const t=e.target.dataset.t; if(t) setTab(t); });
+
+/* the All / Week / Month / Season buttons */
+$("viewbar").addEventListener("click", e=>{
+  const v=e.target.dataset.v; if(!v) return;
+  DB.view=v; saveDB(); renderBooks();
+});
+
+/* tap a star on a finished book to set its rating (left side of a star = half) */
+$("books").addEventListener("click", e=>{
+  const wrap = e.target.closest(".stars.rate"); if(!wrap) return;
+  const star = e.target.closest(".st");          if(!star) return;
+  const all  = [...wrap.querySelectorAll(".st")];
+  const idx  = all.indexOf(star);
+  const r    = star.getBoundingClientRect();
+  const leftHalf = (e.clientX - r.left) < r.width/2;
+  const b = DB.books.find(x=>x.id===wrap.dataset.id); if(!b) return;
+  b.rating = idx + (leftHalf ? 0.5 : 1);
+  saveDB(); renderBooks();
+});
+
+/* ============================ daily challenge ============================ */
+const CHALLENGES = [
+  {e:"📖", t:"Read a whole book in one day!"},
+  {e:"🟩", t:"Finish one row of your reading bingo"},
+  {e:"🌳", t:"Read outdoors for 20 minutes"},
+  {e:"🚗", t:"Bring a book on a car ride and read"},
+  {e:"🌙", t:"Read in bed before you fall asleep"},
+  {e:"🍪", t:"Read with a cozy snack"},
+  {e:"🔊", t:"Read a page out loud to someone"},
+  {e:"⏱️", t:"Read for 30 minutes without stopping"},
+  {e:"🆕", t:"Start a brand-new book today"},
+  {e:"🏰", t:"Read inside a blanket fort"},
+  {e:"☀️", t:"Read first thing in the morning"},
+  {e:"🐾", t:"Read out loud to a pet or a stuffed animal"},
+  {e:"📚", t:"Read two different books today"},
+  {e:"✏️", t:"Write down your favorite sentence from today's reading"},
+];
+
+/* which day is it? (a number that goes up by 1 each day, so the challenge is the
+   same all day but different tomorrow) */
+function dayNumber(dStr){ return Math.floor(new Date(dStr+"T00:00:00").getTime()/86400000); }
+
+/* make sure today has a challenge picked */
+function ensureChallenge(){
+  const t = todayStr();
+  if(!DB.challenge || DB.challenge.date!==t){
+    DB.challenge = { date:t, done:false, offset:0 };
+    saveDB();
+  }
+}
+
+/* special-day types, each with its own matching challenges */
+const EVENT_TYPES = {
+  car: { e:"🚗", label:"Car ride", challenges:[
+    {e:"🚗", t:"Read during the car ride"},
+    {e:"📚", t:"Bring two books on the car ride"},
+    {e:"🛣️", t:"Read a whole chapter before you arrive"},
+    {e:"🎧", t:"Enjoy a story the whole way there"},
+  ]},
+  trip: { e:"✈️", label:"Trip", challenges:[
+    {e:"✈️", t:"Read while you travel"},
+    {e:"🧳", t:"Pack a book in your bag"},
+    {e:"🗺️", t:"Read about the place you're visiting"},
+  ]},
+  holiday: { e:"🎄", label:"Holiday", challenges:[
+    {e:"🎄", t:"Read a holiday story"},
+    {e:"☕", t:"Read with a warm drink"},
+    {e:"🎁", t:"Read a book you got as a gift"},
+  ]},
+  vacation: { e:"🏖️", label:"Vacation", challenges:[
+    {e:"⏰", t:"Read for one hour on vacation"},
+    {e:"🏁", t:"Finish a whole book during vacation"},
+    {e:"🏖️", t:"Read somewhere new — beach, pool or park"},
+    {e:"🌅", t:"Read at sunrise or sunset"},
+  ]},
+};
+
+/* which special days cover today? (dates compare fine as YYYY-MM-DD text) */
+function eventsToday(){
+  const t = todayStr();
+  return DB.events.filter(ev => t >= ev.from && t <= (ev.to||ev.from));
+}
+/* today's challenge: a matching one if there's a special day, otherwise the normal pool */
+function currentChallenge(){
+  const evs = eventsToday();
+  const pool = evs.length ? EVENT_TYPES[evs[0].type].challenges : CHALLENGES;
+  const off = (DB.challenge && DB.challenge.offset) || 0;
+  const idx = (dayNumber(todayStr()) + off) % pool.length;
+  return { c: pool[idx], event: evs[0] || null };
+}
+function eventBannerHTML(ev){
+  const cfg = EVENT_TYPES[ev.type]; if(!cfg) return "";
+  return `<div class="evt-banner">${cfg.e} ${cfg.label} today — here's a special challenge!</div>`;
+}
+
+/* the big flame at the top — always visible, to keep you motivated */
+function renderStreak(){
+  const s = DB.cstats.streak || 0;
+  const el = $("streakBadge");
+  if(s>0){ el.className="streakbadge"; el.textContent = `🔥 ${s} day${s>1?"s":""} in a row!`; }
+  else   { el.className="streakbadge cold"; el.textContent = `🔥 Do today's challenge to start a streak!`; }
+}
+
+function renderChallenge(){
+  ensureChallenge();
+  renderStreak();
+  const { c, event } = currentChallenge();
+  const done = DB.challenge.done;
+  const st = DB.cstats;
+  const el = $("challenge");
+  el.classList.toggle("done", done);
+  el.classList.toggle("compact", done);   // when done, shrink to a slim bar to save room
+
+  if(done){
+    // collapsed: just a slim "done" bar with the streak
+    el.innerHTML = `<span class="streak">✅ Challenge done!${st.streak>0 ? (" · 🔥 "+st.streak+"-day streak") : ""}</span>`;
+    return;
+  }
+
+  el.innerHTML = `
+    ${event ? eventBannerHTML(event) : ""}
+    <div class="top">
+      <span class="lbl">🎯 Today's Reading Challenge</span>
+      <button class="roll" id="rollCh" title="Surprise me with a different one">🎲</button>
+    </div>
+    <div class="txt">${c.e} ${c.t}</div>
+    <button class="btn" id="doneCh">✓ I did it!</button>
+    <span class="streak" style="margin-left:10px">${st.streak>0 ? ("🔥 "+st.streak+"-day streak") : ""}</span>
+  `;
+  $("doneCh").onclick=markChallengeDone;
+  $("rollCh").onclick=rerollChallenge;
+}
+
+function rerollChallenge(){
+  DB.challenge.offset = (DB.challenge.offset||0) + 1;   // step to the next idea in the pool
+  saveDB(); renderChallenge();
+}
+
+function markChallengeDone(){
+  if(DB.challenge.done) return;
+  const t = todayStr();
+  const st = DB.cstats;
+  // yesterday's date string, to check if the streak continues
+  const y = new Date(t+"T00:00:00"); y.setDate(y.getDate()-1);
+  const yStr = y.getFullYear()+"-"+String(y.getMonth()+1).padStart(2,"0")+"-"+String(y.getDate()).padStart(2,"0");
+  st.done += 1;
+  st.streak = (st.last===yStr) ? st.streak+1 : 1;   // continue the streak, or start fresh
+  st.last = t;
+  DB.challenge.done = true;
+  saveDB(); renderChallenge();
+}
+
+/* ============================ reading bingo ============================
+   Part of the challenges. A 3x3 board: read a book that fits a square, then
+   tap it. Fill a full line (row/column/diagonal) to win BINGO! */
+/* 16 boxes (a 4x4 board) — your categories, some repeats, and "Your choice!" boxes */
+const BINGO_DEFAULT = [
+  {e:"💕", t:"Romantic comedy"},
+  {e:"🏠", t:"Realistic fiction"},
+  {e:"💬", t:"Graphic novel"},
+  {e:"🌍", t:"Someone different than you"},
+  {e:"🦉", t:"Non-fiction"},
+  {e:"✨", t:"New author"},
+  {e:"📊", t:"Non-fiction graphic novel"},
+  {e:"💕", t:"Romantic comedy"},               // repeats are allowed!
+  {e:"🏠", t:"Realistic fiction"},
+  {e:"💬", t:"Graphic novel"},
+  {e:"🌍", t:"Someone different than you"},
+  {e:"🦉", t:"Non-fiction"},
+  {e:"✨", t:"New author"},
+  {e:"⭐", t:"Your choice!"},                   // read anything you like for these
+  {e:"⭐", t:"Your choice!"},
+  {e:"⭐", t:"Your choice!"},
+];
+/* every way to win on a 4x4 board: 4 rows, 4 columns, 2 diagonals */
+const BINGO_LINES = [
+  [0,1,2,3],[4,5,6,7],[8,9,10,11],[12,13,14,15],
+  [0,4,8,12],[1,5,9,13],[2,6,10,14],[3,7,11,15],
+  [0,5,10,15],[3,6,9,12]
+];
+
+/* a big pool of ideas — your 7 favorites are always on the board, plus 6 surprise
+   ideas (a different mix each time) and 3 "Your choice!" boxes */
+const BINGO_CORE = [
+  {e:"💕", t:"Romantic comedy"},
+  {e:"🏠", t:"Realistic fiction"},
+  {e:"💬", t:"Graphic novel"},
+  {e:"🌍", t:"Someone different than you"},
+  {e:"🦉", t:"Non-fiction"},
+  {e:"✨", t:"New author"},
+  {e:"📊", t:"Non-fiction graphic novel"},
+];
+const BINGO_EXTRAS = [
+  {e:"🐉", t:"Fantasy"},
+  {e:"🚀", t:"Science fiction"},
+  {e:"🔍", t:"A mystery"},
+  {e:"😂", t:"Made you laugh"},
+  {e:"😢", t:"Made you feel"},
+  {e:"🏆", t:"An award winner"},
+  {e:"📚", t:"Part of a series"},
+  {e:"🐾", t:"About an animal"},
+  {e:"🗺️", t:"Set in another country"},
+  {e:"🕰️", t:"Historical fiction"},
+  {e:"🧪", t:"About science or space"},
+  {e:"👵", t:"A grown-up recommended it"},
+  {e:"👯", t:"A friend recommended it"},
+  {e:"🦸", t:"Has a hero"},
+  {e:"📰", t:"A real person's life"},
+  {e:"🌈", t:"You picked it by its cover"},
+  {e:"🔤", t:"Title starts with your initial"},
+  {e:"🎨", t:"About art or music"},
+];
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function freshBingo(){
+  const extras = shuffle(BINGO_EXTRAS.slice()).slice(0,6);   // 6 surprise ideas, different each board
+  const choice = [{e:"⭐",t:"Your choice!"},{e:"⭐",t:"Your choice!"},{e:"⭐",t:"Your choice!"}];
+  const squares = shuffle([...BINGO_CORE, ...extras, ...choice]).map(s=>({e:s.e, t:s.t, done:false}));
+  return { squares };
+}
+function ensureBingo(){ if(!DB.bingo || !Array.isArray(DB.bingo.squares) || DB.bingo.squares.length!==16) DB.bingo=freshBingo(); }
+function bingoWon(sq){ return sq.length>0 && sq.every(s => s.done); }   // win = the WHOLE board is filled
+
+/* which season is it right now? (used for the board's title) */
+function seasonLabel(){
+  const m = new Date(todayStr()+"T00:00:00").getMonth();
+  if(m===11 || m<=1) return {e:"❄️", n:"Winter"};
+  if(m<=4)           return {e:"🌸", n:"Spring"};
+  if(m<=7)           return {e:"☀️", n:"Summer"};
+  return {e:"🍂", n:"Fall"};
+}
+
+function renderBingoGrid(){
+  ensureBingo();
+  const sq = DB.bingo.squares;
+  const season = seasonLabel();
+  $("bingoTitle").textContent = `${season.e} ${season.n} Reading Bingo`;
+  const filled = sq.filter(s=>s.done).length;
+  $("bingoWin").innerHTML = bingoWon(sq)
+    ? `<div class="bingo-win">🎉 You filled the WHOLE board! 🎉<br><span style="font-size:13px;font-weight:400">Tap “New board” to start your next ${season.n} bingo.</span></div>`
+    : `<div class="bingo-progress">✅ ${filled} / ${sq.length} squares filled</div>`;
+  $("bingoGrid").innerHTML = sq.map((s,i)=>
+    `<button class="bingo-cell ${s.done?"on":""} ${s.free?"free":""}" data-i="${i}">
+       <span class="be">${s.e}</span><span class="bt">${escapeHtml(s.t)}</span>
+     </button>`).join("");
+}
+function openBingo(){ renderBingoGrid(); $("bingoScrim").classList.add("show"); }
+function closeBingo(){ $("bingoScrim").classList.remove("show"); }
+$("closeBingo").onclick = closeBingo;
+$("newBingo").onclick = ()=>{ DB.bingo=freshBingo(); saveDB(); renderBingoGrid(); };
+$("bingoGrid").addEventListener("click", e=>{
+  const cell = e.target.closest(".bingo-cell"); if(!cell) return;
+  const s = DB.bingo.squares[+cell.dataset.i];
+  if(s.free) return;                 // the free space stays filled
+  s.done = !s.done; saveDB(); renderBingoGrid();
+});
+
+/* ============================ smart wishlist (find books) ============================
+   Searches real books on the internet using Google Books, and shows their cover,
+   author and page count so you can add them with one tap. */
+let lastResults = [];
+
+async function searchBooks(qs){
+  // qs is a ready-made query string, e.g. 'q=charlotte%20web' or 'subject=young_adult_fiction'
+  const url = "https://openlibrary.org/search.json?"+qs
+            + "&limit=20&fields=title,author_name,cover_i,number_of_pages_median";
+  const res = await fetch(url);
+  if(!res.ok) throw new Error("http "+res.status);
+  const data = await res.json();
+  return (data.docs||[]).map(d=>({
+    title:  d.title || "(untitled)",
+    author: (d.author_name||[]).join(", "),
+    pages:  d.number_of_pages_median || 0,
+    cover:  d.cover_i ? `https://covers.openlibrary.org/b/id/${d.cover_i}-M.jpg` : ""
+  })).filter(b=>b.title);
+}
+
+/* best-effort: look up a cover photo for a book you typed in yourself */
+async function fetchCover(title, author){
+  try{
+    const r = await searchBooks("q="+encodeURIComponent([title,author].filter(Boolean).join(" ")));
+    return r[0] ? r[0].cover : "";
+  }catch(e){ return ""; }
+}
+
+/* search words for "popular" and "for my level" (level uses your grade/Lexile) */
+function popularQuery(){ return "subject=juvenile_fiction"; }
+function levelQuery(){
+  const lex = Number(DB.profile.lexile)||0, g = Number(DB.profile.grade)||0;
+  if(lex>=1050 || g>=7) return "subject=young_adult_fiction";
+  if(lex>=850  || g>=4) return "subject=juvenile_fiction";
+  return "subject=readers";
+}
+function profileText(){
+  const g=DB.profile.grade, l=DB.profile.lexile;
+  return "📖 " + [g?("Grade "+g):"", l?(l+"L"):""].filter(Boolean).join(" · ");
+}
+
+async function runSearch(query){
+  const box = $("discoverResults");
+  box.innerHTML = `<div class="spinner">🔎 Looking for books…</div>`;
+  try{
+    lastResults = await searchBooks(query);
+    renderResults();
+  }catch(e){
+    box.innerHTML = `<div class="muted" style="text-align:center;padding:18px">😕 Couldn't get books right now.<br>The internet might be busy — wait a few seconds and try again, check your wi-fi, or tap “✍️ Type it myself.”</div>`;
+  }
+}
+function renderResults(){
+  const box = $("discoverResults");
+  if(!lastResults.length){ box.innerHTML = `<div class="muted" style="text-align:center;padding:18px">No books found. Try different words!</div>`; return; }
+  box.innerHTML = lastResults.map((r,i)=>`
+    <div class="result">
+      ${r.cover?`<img src="${r.cover}" alt="">`:`<div class="noimg">📖</div>`}
+      <div class="grow">
+        <div class="ttl">${escapeHtml(r.title)}</div>
+        <div class="auth">${escapeHtml(r.author||"Unknown author")}</div>
+        <div class="pg">${r.pages?(r.pages+" pages"):"pages unknown"}</div>
+      </div>
+      <button class="btn add" data-i="${i}" style="padding:8px 12px;font-size:13px">Add 💛</button>
+    </div>`).join("");
+}
+function addFromResult(i, btn){
+  const r = lastResults[i]; if(!r) return;
+  const auto = DB.settings.autoEpilogue;
+  DB.wishlist.push({
+    id: "w"+(DB.wishlist.length)+"_"+(r.title||"").replace(/\W+/g,"").slice(0,6)+(DB.wishlist.length),
+    title:r.title, author:r.author||"", pages:r.pages||0, cover:r.cover||"",
+    epiloguePages: auto ? (Number(DB.settings.epilogueEstimate)||0) : 0,
+    plan: todayStr()
+  });
+  saveDB(); renderBooks();
+  if(btn){ btn.textContent="✓ Added"; btn.disabled=true; btn.style.opacity=".6"; }
+}
+$("discoverResults").addEventListener("click", e=>{
+  const b = e.target.closest(".add"); if(!b) return;
+  addFromResult(+b.dataset.i, b);
+});
+
+function openDiscover(){
+  $("discoverProfile").textContent = profileText();
+  $("discoverSearch").value="";
+  $("discoverResults").innerHTML = `<div class="muted" style="text-align:center;padding:12px">Search for a book, or tap 🔥 Popular or ✨ For my level.</div>`;
+  $("discoverScrim").classList.add("show"); $("discoverSearch").focus();
+}
+function closeDiscover(){ $("discoverScrim").classList.remove("show"); }
+$("discoverGo").onclick      = ()=>{ const q=$("discoverSearch").value.trim(); if(q) runSearch("q="+encodeURIComponent(q)); };
+$("discoverSearch").addEventListener("keydown", e=>{ if(e.key==="Enter"){ const q=e.target.value.trim(); if(q) runSearch("q="+encodeURIComponent(q)); } });
+$("discoverPopular").onclick = ()=>runSearch(popularQuery());
+$("discoverLevel").onclick   = ()=>runSearch(levelQuery());
+$("discoverManual").onclick  = ()=>{ closeDiscover(); openWish(); };
+$("closeDiscover").onclick   = closeDiscover;
+$("discoverProfileBtn").onclick = openProfile;
+
+/* ---- my reading level ---- */
+function openProfile(){
+  $("p_grade").value  = DB.profile.grade||"";
+  $("p_lexile").value = DB.profile.lexile||"";
+  $("p_autoEpi").checked = !!DB.settings.autoEpilogue;
+  $("p_epiEst").value = DB.settings.epilogueEstimate||10;
+  $("p_epiWrap").style.display = DB.settings.autoEpilogue ? "" : "none";
+  $("profileScrim").classList.add("show");
+}
+$("p_autoEpi").onchange = ()=>{ $("p_epiWrap").style.display = $("p_autoEpi").checked ? "" : "none"; };
+$("saveProfile").onclick = ()=>{
+  DB.profile.grade  = $("p_grade").value.trim();
+  DB.profile.lexile = Number($("p_lexile").value)||0;
+  DB.settings.autoEpilogue = $("p_autoEpi").checked;
+  DB.settings.epilogueEstimate = Number($("p_epiEst").value)||0;
+  saveDB();
+  $("discoverProfile").textContent = profileText();
+  renderSettings();
+  $("profileScrim").classList.remove("show");
+};
+$("cancelProfile").onclick = ()=>$("profileScrim").classList.remove("show");
+
+/* ============================ calendar (special days) ============================ */
+let pickEventType = "car";
+function renderTypePick(){ document.querySelectorAll("#evTypePick button").forEach(b=>b.classList.toggle("on", b.dataset.t===pickEventType)); }
+function openCal(prefillDate){
+  pickEventType="car"; renderTypePick();
+  $("ev_from").value = prefillDate || todayStr(); $("ev_to").value="";
+  renderEvents();
+  $("calScrim").classList.add("show");
+}
+function closeCal(){ $("calScrim").classList.remove("show"); }
+$("closeCal").onclick = closeCal;
+
+/* ============================ bottom menu / pages ============================ */
+function updateFab(){ $("addBook").style.display = (DB.page==="home" && DB.tab!=="reading") ? "" : "none"; }
+function showPage(p){
+  DB.page = p; saveDB();
+  for(const n of ["home","calendar","games","settings"]) $("page-"+n).style.display = (n===p) ? "" : "none";
+  document.querySelectorAll("#bottomnav button").forEach(b=>b.classList.toggle("on", b.dataset.p===p));
+  updateFab();
+  if(p==="calendar") renderCalendar();
+  if(p==="games")    renderGames();
+  if(p==="settings") renderSettings();
+}
+$("bottomnav").addEventListener("click", e=>{ const b=e.target.closest("button"); if(b) showPage(b.dataset.p); });
+
+/* ---- calendar page (month grid) ---- */
+let calView = null;
+function renderCalendar(){
+  const now = new Date(todayStr()+"T00:00:00");
+  if(!calView) calView = { y:now.getFullYear(), m:now.getMonth() };
+  const { y, m } = calView;
+  const pad = n => String(n).padStart(2,"0");
+  $("calMonth").textContent = MONTHS[m]+" "+y;
+  const first = new Date(y, m, 1).getDay();        // 0=Sun
+  const days  = new Date(y, m+1, 0).getDate();
+  const todayS = todayStr();
+  let cells = "";
+  for(let i=0;i<first;i++) cells += `<div class="cal-cell blank"></div>`;
+  for(let d=1; d<=days; d++){
+    const ds = y+"-"+pad(m+1)+"-"+pad(d);
+    let marks = "";
+    DB.events.forEach(ev=>{ if(ds>=ev.from && ds<=(ev.to||ev.from)){ const c=EVENT_TYPES[ev.type]; if(c) marks+=c.e; } });
+    if(DB.reading.some(b=>b.started===ds) || DB.books.some(b=>b.started===ds)) marks += "📖";
+    if(DB.books.some(b=>b.finished===ds)) marks += "✅";
+    cells += `<div class="cal-cell${ds===todayS?" today":""}" data-d="${ds}"><span class="dnum">${d}</span><span class="marks">${marks}</span></div>`;
+  }
+  $("calGrid").innerHTML = cells;
+}
+$("calPrev").onclick = ()=>{ if(!calView) renderCalendar(); calView.m--; if(calView.m<0){ calView.m=11; calView.y--; } renderCalendar(); };
+$("calNext").onclick = ()=>{ if(!calView) renderCalendar(); calView.m++; if(calView.m>11){ calView.m=0; calView.y++; } renderCalendar(); };
+$("calGrid").addEventListener("click", e=>{ const c=e.target.closest(".cal-cell"); if(!c || c.classList.contains("blank")) return; openCal(c.dataset.d); });
+$("calAdd").onclick = ()=>openCal();
+
+/* ---- games page ---- */
+function renderGames(){
+  const s = seasonLabel();
+  $("gamesList").innerHTML = `
+    <div class="game-card">
+      <div style="font-size:34px">🎲</div>
+      <div class="grow"><b>${s.e} ${s.n} Reading Bingo</b><div class="muted">Fill the whole board to win!</div></div>
+      <button class="btn" id="playBingo">Play</button>
+    </div>
+    <div class="muted" style="text-align:center;margin-top:16px">More games coming soon… 🎮</div>`;
+  $("playBingo").onclick = openBingo;
+}
+
+/* ---- settings page ---- */
+function renderSettings(){
+  const p = DB.profile;
+  $("setLevel").textContent = "Grade "+(p.grade||"?")+" · "+(p.lexile||"?")+"L"
+    + (DB.settings.autoEpilogue ? (" · epilogue +"+DB.settings.epilogueEstimate+" pages") : "");
+  // sync status + buttons
+  if(syncMsg) $("syncStatus").textContent = syncMsg;
+  else $("syncStatus").textContent = SYNC.on ? "Connected ✓ — your books save online." : "Not connected.";
+  $("syncButtons").innerHTML = SYNC.on
+    ? `<button class="btn soft" id="syncSetBtn">🔄 Sync now</button><button class="btn soft" id="syncOffBtn">Disconnect</button>`
+    : `<button class="btn" id="syncConnBtn">☁️ Connect</button>`;
+  if(SYNC.on){
+    $("syncSetBtn").onclick = syncNow;
+    $("syncOffBtn").onclick = ()=>{ SYNC={url:"",secret:"",on:false}; saveSync(); setSyncStatus(""); renderSettings(); };
+  } else {
+    $("syncConnBtn").onclick = openConnect;
+  }
+}
+$("editLevel").onclick = openProfile;
+
+/* ---- connect flow ---- */
+function openConnect(){
+  $("conn_url").value = SYNC.url||"";
+  $("conn_secret").value = SYNC.secret||"";
+  $("conn_msg").textContent = "";
+  $("connScrim").classList.add("show");
+}
+$("conn_cancel").onclick = ()=>$("connScrim").classList.remove("show");
+$("conn_save").onclick = async ()=>{
+  const url = $("conn_url").value.trim(), secret = $("conn_secret").value.trim();
+  if(!url || !secret){ $("conn_msg").textContent = "Please paste both the address and the secret."; return; }
+  $("conn_msg").textContent = "Connecting…";
+  const prev = { ...SYNC };
+  SYNC = { url, secret, on:true };
+  try{
+    const d = (await api("pull")).data || {};          // test the connection
+    if(d.db && (d.ts||0) > (DB.updatedAt||0)){
+      adoptRemote(d.db, d.ts);                          // online copy is newer → use it
+    } else {
+      await pushNow();                                  // this device is newer (or sheet empty) → upload
+    }
+    saveSync();
+    $("connScrim").classList.remove("show");
+    setSyncStatus("Connected ✓");
+    renderSettings();
+  }catch(e){
+    SYNC = prev;                                        // roll back on failure
+    $("conn_msg").textContent = "😕 Couldn't connect: "+e.message+". Double-check the address and secret.";
+  }
+};
+$("evTypePick").addEventListener("click", e=>{ const t=e.target.closest("button"); if(!t) return; pickEventType=t.dataset.t; renderTypePick(); });
+$("addEvent").onclick = ()=>{
+  const from = $("ev_from").value; if(!from){ $("ev_from").focus(); return; }
+  let to = $("ev_to").value || "";
+  if(to && to < from) to = "";                 // ignore a "to" that's before "from"
+  DB.events.push({ id:"e"+(DB.events.length)+"_"+from, type:pickEventType, from, to });
+  saveDB(); renderEvents(); renderChallenge(); renderCalendar();
+};
+function renderEvents(){
+  const box = $("evList");
+  const evs = DB.events.slice().sort((a,b)=> a.from<b.from?-1 : a.from>b.from?1 : 0);
+  if(!evs.length){ box.innerHTML = `<div class="muted">No special days yet. Add one above! 📅</div>`; return; }
+  box.innerHTML = evs.map(ev=>{
+    const cfg = EVENT_TYPES[ev.type] || {e:"📅", label:"Special day"};
+    const when = ev.to ? (prettyDate(ev.from)+" → "+prettyDate(ev.to)) : prettyDate(ev.from);
+    return `<div class="evt"><span style="font-size:22px">${cfg.e}</span>
+      <div class="grow"><b>${cfg.label}</b><div class="when">${when}</div></div>
+      <button class="x" title="Remove" onclick="removeEvent('${ev.id}')">✕</button></div>`;
+  }).join("");
+}
+window.removeEvent = function(id){ DB.events = DB.events.filter(e=>e.id!==id); saveDB(); renderEvents(); renderChallenge(); renderCalendar(); };
+
+/* on trip/vacation days, pop the Bingo open once a day */
+function maybeAutoBingo(){
+  const onTrip = eventsToday().find(e=> e.type==="trip" || e.type==="vacation");
+  if(onTrip && DB.lastAutoBingo !== todayStr()){
+    DB.lastAutoBingo = todayStr(); saveDB();
+    openBingo();
+  }
+}
+function escapeHtml(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+
+window.removeBook = function(id){
+  DB.books = DB.books.filter(b=>b.id!==id);
+  saveDB(); renderBooks(); renderGoals();
+};
+window.removeWish = function(id){
+  DB.wishlist = DB.wishlist.filter(b=>b.id!==id);
+  saveDB(); renderBooks();
+};
+/* "I read it!" — instantly move the book from the wishlist to the Finished shelf.
+   No questions asked. You can give it stars right on the shelf afterwards. */
+let convertId = null;   // (kept for the add-book form; not used by readIt anymore)
+window.readIt = function(id){
+  const i = DB.wishlist.findIndex(x=>x.id===id); if(i<0) return;
+  const b = DB.wishlist[i];
+  DB.wishlist.splice(i,1);                       // take it off the wishlist
+  DB.books.push({                                // put it on the finished shelf
+    id: "b"+(DB.books.length)+"_"+(b.title||"").replace(/\W+/g,"").slice(0,6)+(DB.books.length),
+    title:b.title, author:b.author||"", pages:b.pages||0, epiloguePages:b.epiloguePages||0,
+    cover:b.cover||"", rating:0, finished:todayStr()
+  });
+  saveDB(); renderGoals(); setTab("finished");   // hop straight to Finished
+};
+
+/* "📖 Reading" — move a wishlist book onto the Currently Reading shelf */
+window.startReading = function(id){
+  const i = DB.wishlist.findIndex(x=>x.id===id); if(i<0) return;
+  const b = DB.wishlist[i]; DB.wishlist.splice(i,1);
+  DB.reading.push({
+    id: "r"+(DB.reading.length)+"_"+(b.title||"").replace(/\W+/g,"").slice(0,6)+(DB.reading.length),
+    title:b.title, author:b.author||"", pages:b.pages||0, epiloguePages:b.epiloguePages||0,
+    cover:b.cover||"", started:todayStr()
+  });
+  saveDB(); setTab("reading");
+};
+
+/* "✓ I finished it!" — move a reading book onto the Finished shelf (rate it there) */
+window.finishReading = function(id){
+  const i = DB.reading.findIndex(x=>x.id===id); if(i<0) return;
+  const b = DB.reading[i]; DB.reading.splice(i,1);
+  DB.books.push({
+    id: "b"+(DB.books.length)+"_"+(b.title||"").replace(/\W+/g,"").slice(0,6)+(DB.books.length),
+    title:b.title, author:b.author||"", pages:b.pages||0, epiloguePages:b.epiloguePages||0,
+    cover:b.cover||"", rating:0, started:b.started||"", finished:todayStr()
+  });
+  saveDB(); renderGoals(); setTab("finished");
+};
+
+window.removeReading = function(id){
+  DB.reading = DB.reading.filter(b=>b.id!==id);
+  saveDB(); renderBooks();
+};
+
+/* ============================ add-a-book pop-up ============================ */
+let pickRating = 0;
+function renderStarPick(){
+  const el=$("f_stars");
+  el.innerHTML = prettyStars(pickRating);
+}
+$("f_stars").addEventListener("click", e=>{
+  // look at the EXACT star that was tapped, and which side of it
+  const star = e.target.closest(".st");
+  if(!star) return;
+  const all = [...$("f_stars").querySelectorAll(".st")];
+  const idx = all.indexOf(star);                       // 0..4
+  const r = star.getBoundingClientRect();
+  const leftHalf = (e.clientX - r.left) < r.width/2;   // left side = half star
+  pickRating = idx + (leftHalf ? 0.5 : 1);             // e.g. 4th star, right side -> 4
+  renderStarPick();
+});
+
+function todayStr(){
+  const d=new Date();
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
+function openBook(){ pickRating=0; renderStarPick();
+  $("f_title").value=""; $("f_author").value=""; $("f_pages").value="";
+  if(DB.settings.autoEpilogue){ $("f_epiOn").checked=true; $("f_epiWrap").style.display=""; $("f_epiPages").value=DB.settings.epilogueEstimate||""; }
+  else { $("f_epiOn").checked=false; $("f_epiWrap").style.display="none"; $("f_epiPages").value=""; }
+  $("f_date").value=todayStr();                 // default to "today" so it's quick
+  $("bookScrim").classList.add("show"); $("f_title").focus();
+}
+/* the epilogue page box only shows when you tick the box */
+$("f_epiOn").onchange = ()=>{ $("f_epiWrap").style.display = $("f_epiOn").checked ? "" : "none"; };
+function closeBook(){ $("bookScrim").classList.remove("show"); convertId=null; }
+
+/* the big ＋ button opens the right form for the shelf you're on */
+$("addBook").onclick=()=>{
+  if(DB.tab==="wishlist") openDiscover();      // smart "find books" first
+  else { convertId=null; openBook(); }
+};
+$("cancelBook").onclick=closeBook;
+$("saveBook").onclick=()=>{
+  const title=$("f_title").value.trim();
+  if(!title){ $("f_title").focus(); return; }
+  DB.books.push({
+    id: "b"+(DB.books.length)+"_"+title.replace(/\W+/g,"").slice(0,6)+(DB.books.length),
+    title, author:$("f_author").value.trim(),
+    pages:Number($("f_pages").value)||0,
+    epiloguePages: $("f_epiOn").checked ? (Number($("f_epiPages").value)||0) : 0,
+    rating:pickRating,
+    finished:$("f_date").value || todayStr()
+  });
+  const wasConvert = !!convertId;
+  if(wasConvert) DB.wishlist = DB.wishlist.filter(b=>b.id!==convertId);  // it moved off the wishlist
+  convertId=null;
+  saveDB(); renderGoals();
+  $("bookScrim").classList.remove("show");
+  if(wasConvert) setTab("finished"); else renderBooks();   // show it on the Finished shelf
+};
+
+/* ============================ wishlist pop-up ============================ */
+function openWish(){
+  $("w_title").value=""; $("w_author").value=""; $("w_pages").value="";
+  if(DB.settings.autoEpilogue){ $("w_epiOn").checked=true; $("w_epiWrap").style.display=""; $("w_epiPages").value=DB.settings.epilogueEstimate||""; }
+  else { $("w_epiOn").checked=false; $("w_epiWrap").style.display="none"; $("w_epiPages").value=""; }
+  $("w_date").value=todayStr();
+  $("wishScrim").classList.add("show"); $("w_title").focus();
+}
+$("w_epiOn").onchange = ()=>{ $("w_epiWrap").style.display = $("w_epiOn").checked ? "" : "none"; };
+function closeWish(){ $("wishScrim").classList.remove("show"); }
+$("cancelWish").onclick=closeWish;
+$("saveWish").onclick=()=>{
+  const title=$("w_title").value.trim();
+  if(!title){ $("w_title").focus(); return; }
+  const entry = {
+    id: "w"+(DB.wishlist.length)+"_"+title.replace(/\W+/g,"").slice(0,6)+(DB.wishlist.length),
+    title, author:$("w_author").value.trim(), cover:"",
+    pages:Number($("w_pages").value)||0,
+    epiloguePages: $("w_epiOn").checked ? (Number($("w_epiPages").value)||0) : 0,
+    plan:$("w_date").value || todayStr()
+  };
+  DB.wishlist.push(entry);
+  saveDB(); renderBooks(); closeWish();
+  // try to find a cover photo for the book you typed, and add it when it arrives
+  fetchCover(entry.title, entry.author).then(c=>{ if(c){ entry.cover=c; saveDB(); renderBooks(); } });
+};
+
+/* ============================ goals pop-up ============================ */
+function openGoals(){
+  $("g_books").value=DB.goals.books||"";
+  $("g_pages").value=DB.goals.pages||"";
+  $("g_minutes").value=DB.goals.minutes||"";
+  $("goalScrim").classList.add("show");
+}
+function closeGoals(){ $("goalScrim").classList.remove("show"); }
+$("editGoals").onclick=openGoals;
+$("cancelGoals").onclick=closeGoals;
+$("saveGoals").onclick=()=>{
+  DB.goals={
+    books:Number($("g_books").value)||0,
+    pages:Number($("g_pages").value)||0,
+    minutes:Number($("g_minutes").value)||0
+  };
+  saveDB(); renderGoals(); closeGoals();
+};
+
+/* tap the dark area to close a pop-up */
+for(const id of ["bookScrim","goalScrim","wishScrim","bingoScrim","discoverScrim","profileScrim","calScrim","minScrim","connScrim"]){
+  $(id).addEventListener("click",e=>{ if(e.target===$(id)){ $(id).classList.remove("show"); convertId=null; } });
+}
+
+/* ============================ start! ============================ */
+loadSync();                     // remember the cloud connection, if any
+renderChallenge();
+renderGoals();
+setTab(DB.tab || "finished");   // shows the right shelf + draws the books
+showPage(DB.page || "home");    // open the right bottom-menu page
+maybeAutoBingo();               // if it's a trip/vacation, pop the Bingo open
+if(SYNC.on) syncNow();          // pull the latest from the cloud on launch
+$("about").innerHTML = `Cozy Reads · version ${APP_VERSION}`;
+
+/* let the app work offline once it's online */
+if("serviceWorker" in navigator){
+  window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+}
+</script>
+</body>
+</html>

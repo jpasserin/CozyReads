@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="110" fill="#b98a6a"/>
+  <g transform="translate(96 110)">
+    <!-- open book -->
+    <path d="M160 40 C110 8 40 8 8 24 L8 250 C40 234 110 234 160 266 Z" fill="#fffaf3"/>
+    <path d="M160 40 C210 8 280 8 312 24 L312 250 C280 234 210 234 160 266 Z" fill="#fbf3e9"/>
+    <path d="M160 40 L160 266" stroke="#a06f50" stroke-width="10" stroke-linecap="round"/>
+    <!-- lines -->
+    <g stroke="#e7a0a0" stroke-width="9" stroke-linecap="round">
+      <path d="M40 80 H132"/><path d="M40 120 H132"/><path d="M40 160 H132"/>
+    </g>
+    <g stroke="#a7c4a0" stroke-width="9" stroke-linecap="round">
+      <path d="M188 80 H280"/><path d="M188 120 H280"/><path d="M188 160 H280"/>
+    </g>
+  </g>
+  <!-- star -->
+  <path d="M256 300 l26 53 58 8 -42 41 10 58 -52 -27 -52 27 10 -58 -42 -41 58 -8 Z" fill="#f2c14e"/>
+</svg>

@@ -1,0 +1,12 @@
+{
+  "name": "Cozy Reads",
+  "short_name": "Cozy Reads",
+  "description": "Your snuggly little reading nook — track books and reading goals.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#fbf3e9",
+  "theme_color": "#b98a6a",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
