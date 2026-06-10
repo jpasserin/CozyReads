@@ -286,7 +286,16 @@ footer{text-align:center;color:var(--ink-soft);font-size:12px;margin-top:24px}
     <div class="set-card" style="margin-top:12px">
       <b>☁️ Save online (Google Sheets)</b>
       <div class="muted" style="margin-top:4px" id="syncStatus">Not connected.</div>
-      <div class="row" style="margin-top:10px" id="syncButtons"></div>
+      <label>Web app address (the long https://script.google.com/… link)</label>
+      <input type="text" id="conn_url" placeholder="https://script.google.com/macros/s/…/exec" autocapitalize="off" spellcheck="false">
+      <label>Secret</label>
+      <input type="text" id="conn_secret" placeholder="your secret" autocapitalize="off" spellcheck="false">
+      <div class="muted" id="conn_msg" style="margin-top:8px"></div>
+      <div class="row" style="margin-top:12px">
+        <button class="btn" id="conn_save">Connect</button>
+        <button class="btn soft" id="syncBtn">🔄 Sync now</button>
+        <button class="btn soft" id="syncOffBtn">Disconnect</button>
+      </div>
     </div>
     <footer id="about" style="margin-top:18px"></footer>
   </div>
@@ -348,23 +357,6 @@ footer{text-align:center;color:var(--ink-soft);font-size:12px;margin-top:24px}
     <div class="row" style="margin-top:18px">
       <button class="btn" id="saveWish">Add to wishlist 💛</button>
       <button class="btn soft" id="cancelWish">Cancel</button>
-    </div>
-  </div>
-</div>
-
-<!-- ====== Connect to Google Sheets pop-up ====== -->
-<div class="scrim" id="connScrim">
-  <div class="sheet">
-    <h2>☁️ Save online</h2>
-    <div class="muted">Paste the web-app address and the secret from your spreadsheet. This lets Cozy Reads save your books online so you can use them on another device.</div>
-    <label>Web app address (the long https://script.google.com/… link)</label>
-    <input type="text" id="conn_url" placeholder="https://script.google.com/macros/s/…/exec" autocapitalize="off" spellcheck="false">
-    <label>Secret</label>
-    <input type="text" id="conn_secret" placeholder="your secret" autocapitalize="off" spellcheck="false">
-    <div class="muted" id="conn_msg" style="margin-top:8px"></div>
-    <div class="row" style="margin-top:16px">
-      <button class="btn" id="conn_save">Connect</button>
-      <button class="btn soft" id="conn_cancel">Cancel</button>
     </div>
   </div>
 </div>
@@ -497,7 +489,7 @@ footer{text-align:center;color:var(--ink-soft);font-size:12px;margin-top:24px}
    This is the "brain" of the app. It remembers your books and goals,
    and draws them on the screen. */
 
-const APP_VERSION = "18";       // bump every time we change this file (keep equal to CACHE in sw.js)
+const APP_VERSION = "19";       // bump every time we change this file (keep equal to CACHE in sw.js)
 const SCHEMA_VERSION = 1;       // bump only if the SHAPE of saved data changes
 const LS = "cozyreads";         // the name of our little storage box in the browser
 
@@ -1229,29 +1221,22 @@ function renderSettings(){
   const p = DB.profile;
   $("setLevel").textContent = "Grade "+(p.grade||"?")+" · "+(p.lexile||"?")+"L"
     + (DB.settings.autoEpilogue ? (" · epilogue +"+DB.settings.epilogueEstimate+" pages") : "");
-  // sync status + buttons
+  // sync status line
   if(syncMsg) $("syncStatus").textContent = syncMsg;
   else $("syncStatus").textContent = SYNC.on ? "Connected ✓ — your books save online." : "Not connected.";
-  $("syncButtons").innerHTML = SYNC.on
-    ? `<button class="btn soft" id="syncSetBtn">🔄 Sync now</button><button class="btn soft" id="syncOffBtn">Disconnect</button>`
-    : `<button class="btn" id="syncConnBtn">☁️ Connect</button>`;
-  if(SYNC.on){
-    $("syncSetBtn").onclick = syncNow;
-    $("syncOffBtn").onclick = ()=>{ SYNC={url:"",secret:"",on:false}; saveSync(); setSyncStatus(""); renderSettings(); };
-  } else {
-    $("syncConnBtn").onclick = openConnect;
-  }
+  // fill the address/secret fields from the saved connection
+  if(document.activeElement !== $("conn_url"))    $("conn_url").value = SYNC.url || "";
+  if(document.activeElement !== $("conn_secret")) $("conn_secret").value = SYNC.secret || "";
+  // Sync now / Disconnect only make sense once connected
+  $("syncBtn").style.display    = SYNC.on ? "" : "none";
+  $("syncOffBtn").style.display = SYNC.on ? "" : "none";
+  $("conn_save").textContent    = SYNC.on ? "Reconnect" : "Connect";
 }
 $("editLevel").onclick = openProfile;
 
-/* ---- connect flow ---- */
-function openConnect(){
-  $("conn_url").value = SYNC.url||"";
-  $("conn_secret").value = SYNC.secret||"";
-  $("conn_msg").textContent = "";
-  $("connScrim").classList.add("show");
-}
-$("conn_cancel").onclick = ()=>$("connScrim").classList.remove("show");
+/* ---- connect / sync (inline on the Settings page) ---- */
+$("syncBtn").onclick = syncNow;
+$("syncOffBtn").onclick = ()=>{ SYNC={url:"",secret:"",on:false}; saveSync(); setSyncStatus("Not connected."); renderSettings(); };
 $("conn_save").onclick = async ()=>{
   const url = $("conn_url").value.trim(), secret = $("conn_secret").value.trim();
   if(!url || !secret){ $("conn_msg").textContent = "Please paste both the address and the secret."; return; }
@@ -1260,13 +1245,13 @@ $("conn_save").onclick = async ()=>{
   SYNC = { url, secret, on:true };
   try{
     const d = (await api("pull")).data || {};          // test the connection
-    if(d.db && (d.ts||0) > (DB.updatedAt||0)){
+    if(dbHasContent(d.db) && (d.ts||0) > (DB.updatedAt||0)){
       adoptRemote(d.db, d.ts);                          // online copy is newer → use it
     } else {
       await pushNow();                                  // this device is newer (or sheet empty) → upload
     }
     saveSync();
-    $("connScrim").classList.remove("show");
+    $("conn_msg").textContent = "";
     setSyncStatus("Connected ✓");
     renderSettings();
   }catch(e){
@@ -1463,7 +1448,7 @@ $("saveGoals").onclick=()=>{
 };
 
 /* tap the dark area to close a pop-up */
-for(const id of ["bookScrim","goalScrim","wishScrim","bingoScrim","discoverScrim","profileScrim","calScrim","minScrim","connScrim"]){
+for(const id of ["bookScrim","goalScrim","wishScrim","bingoScrim","discoverScrim","profileScrim","calScrim","minScrim"]){
   $(id).addEventListener("click",e=>{ if(e.target===$(id)){ $(id).classList.remove("show"); convertId=null; } });
 }
 

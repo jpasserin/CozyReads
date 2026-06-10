@@ -1,7 +1,7 @@
 // Cozy Reads service worker — lets the app open even with no internet.
 // Bump CACHE on every change (keep it equal to APP_VERSION in index.html)
 // so the app re-fetches the new version after a refresh.
-const CACHE = "cozyreads-18";
+const CACHE = "cozyreads-19";
 const SHELL = [
   "./", "./index.html", "./manifest.webmanifest", "./icon.svg"
 ];
