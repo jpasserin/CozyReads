@@ -1,7 +1,7 @@
 // Cozy Reads service worker — lets the app open even with no internet.
 // Bump CACHE on every change (keep it equal to APP_VERSION in index.html)
 // so the app re-fetches the new version after a refresh.
-const CACHE = "cozyreads-19";
+const CACHE = "cozyreads-20";
 const SHELL = [
   "./", "./index.html", "./manifest.webmanifest", "./icon.svg"
 ];
@@ -12,7 +12,8 @@ self.addEventListener("install", e => {
 
 self.addEventListener("activate", e => {
   e.waitUntil(
-    caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
+    /* Only this app's own old caches: the other apps share jpasserin.github.io and its cache storage. */
+    caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE && k.startsWith('cozyreads-')).map(k => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 });
